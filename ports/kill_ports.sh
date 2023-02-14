@@ -1,18 +1,11 @@
 #!/bin/bash
 
-# Function to check if a port is in use and return a message indicating the status
-check_port() {
-  local port=$1
+# This script terminates the processes running on ports 80 and 3306
 
-  if fuser "${port}/tcp" > /dev/null; then
-    echo "There is a process using port ${port}."
-  else
-    echo "There is no process using port ${port}."
-  fi
-}
+ports="80 3306"
 
-# Check port 80
-check_port 80
-
-# Check port 3600
-check_port 3600
+for port in $ports; do
+  # Find the process ID (pid) associated with the specified port and terminate the process
+  sudo lsof -t -i tcp:$port -s tcp:listen | sudo xargs kill
+  echo "Process running on port $port has been terminated"
+done
